@@ -34,7 +34,7 @@ s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 # SSL context creation
 context = ssl.create_default_context(ssl.Purpose.SERVER_AUTH)
-context.load_verify_locations(cafile="/Users/windows/projects/Socket-Maze-Game/server.crt") 
+context.load_verify_locations(cafile="./server.crt") 
 context.check_hostname = False  # Disable hostname verification
 
 # Wrap the socket with SSL
