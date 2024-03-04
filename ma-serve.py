@@ -1,8 +1,8 @@
 import socket
 import struct
-import time
 import json
 import ssl
+from _thread import *
 from random import randint
 
 cell_size = 10  # pixels
@@ -74,7 +74,7 @@ ecr = revisited_cells[e][0]
 ecc = revisited_cells[e][1]
 end_color = 'red'
 
-m = {
+server_message = {
     "ms": ms,
     "map": maze_map,
     "cell_size": cell_size,
@@ -117,48 +117,58 @@ def recv_msg(sock):
     return recvall(sock, msglen)
 
 
+def handle_client(conn, addr):
+    # Wrap the socket with SSL
+    ssl_sock = context.wrap_socket(conn, server_side=True)
+    print("successful SSL handshake and connection establishment with", addr)
+
+    # JSON serialization and sending
+    jsonObj = json.dumps(server_message, indent=2).encode("utf-8")
+    data = jsonObj
+    send_msg(ssl_sock, data)
+    print("sent data to", addr)
+
+    # Receiving data
+    received = recv_msg(ssl_sock)
+    m = received.decode("utf-8")
+    timeTaken = json.loads(m)
+
+    print("Total time taken by", addr, ": ", timeTaken["total_time"])
+    ssl_sock.close()
+
+# SSL context creation
+context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
+context.load_cert_chain(certfile="./server.crt", keyfile="./server.key")
+
 def serve(m):
     # Create a TCP/IP socket
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     print("Socket successfully created")
 
-    # SSL context creation
-    context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
-    context.load_cert_chain(certfile="/Users/windows/projects/Socket-Maze-Game/server.crt", keyfile="/Users/windows/projects/Socket-Maze-Game/server.key")
 
     port = 3423
 
     s.bind(('', port))
     print("socket binded to %s" % (port))
 
-    while True:
+
+    global server_running
+    while server_running:
         # Put the socket into listening mode
         s.listen(5)
         print("socket is listening")
 
-        # Wait for a connection
-        c, addr = s.accept()
-        print('Got connection from', addr)
+        try:
+            conn, addr = s.accept()
+            print('Got connection from', addr)
+            # Start a new thread for the client
+            start_new_thread(handle_client, (conn, addr))
 
-        # Wrap the socket with SSL
-        ssl_sock = context.wrap_socket(c, server_side=True)
-        print("successful SSL handshake and connection establishment")
-
-        # JSON serialization and sending
-        jsonObj = json.dumps(m, indent=2).encode("utf-8")
-        data = jsonObj
-        send_msg(ssl_sock, data)
-        print("sent data")
-
-        # Receiving data
-        received = recv_msg(ssl_sock)
-        m = received.decode("utf-8")
-        timeTaken = json.loads(m)
-
-        print("Total time taken: ", timeTaken["total_time"])
-
-        # Close the SSL socket
-        ssl_sock.close()
+        except KeyboardInterrupt:
+            print("Received signal. Gracefully shutting down the server...")
+            s.close()
+            server_running = False
 
 
-serve(m)
+server_running = True
+serve(server_message)
