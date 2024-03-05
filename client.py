@@ -45,7 +45,6 @@ def draw(row, col, color):
     y2 = y1 + cell_size
     ffs.create_rectangle(x1, y1, x2, y2, fill=color)
 
-
 # Create a set object 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -54,14 +53,14 @@ context = ssl.create_default_context(ssl.Purpose.SERVER_AUTH)
 context.load_verify_locations(cafile="./server.crt") 
 context.check_hostname = False  # Disable hostname verification
 
-# Wrap the socket with SSL
-ssl_sock = context.wrap_socket(s, server_hostname='127.0.0.1')
+server = str(input("Enter server IP address(default localhost):").strip() or '127.0.0.1')
+port = int(input("Enter server port(default 3423):").strip() or '3423')
 
-# Define the port on which you want to connect 
-port = 3423               
+# Wrap the socket with SSL
+ssl_sock = context.wrap_socket(s, server_hostname=server)
 
 # Connect to the server
-ssl_sock.connect(('127.0.0.1', port))
+ssl_sock.connect((server, port))
 
 received = recv_msg(ssl_sock)
 m = received.decode("utf-8")

@@ -128,7 +128,7 @@ def serve(m):
     print("Socket successfully created")
 
 
-    port = 3423
+    port = int(input("Enter port to open(default 3423):").strip() or '3423')
 
     s.bind(('', port))
     print("socket binded to %s" % (port))
