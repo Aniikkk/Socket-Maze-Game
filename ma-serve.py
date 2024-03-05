@@ -35,7 +35,7 @@ def check_neighbours(ccr, ccc):
 
 # StartingPoint
 
-# starting color of row
+# starting of row
 scr = randint(1, ms - 2)  # Adjusted range to fit within maze bounds
 # starting random column
 scc = randint(1, ms - 2)  # Adjusted range to fit within maze bounds
