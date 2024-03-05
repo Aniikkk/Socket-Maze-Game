@@ -6,7 +6,6 @@ from tkinter import *
 import ssl
 
 def send_msg(sock, msg):
-    # Prefix each message with a 4-byte length (network byte order)
     msg = struct.pack('>I', len(msg)) + msg
     sock.sendall(msg)
 
@@ -29,23 +28,6 @@ def recv_msg(sock):
     # Read the message data
     return recvall(sock, msglen)
 
-# Create a set object 
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-# SSL context creation
-context = ssl.create_default_context(ssl.Purpose.SERVER_AUTH)
-context.load_verify_locations(cafile="./server.crt") 
-context.check_hostname = False  # Disable hostname verification
-
-# Wrap the socket with SSL
-ssl_sock = context.wrap_socket(s, server_hostname='127.0.0.1')
-
-# Define the port on which you want to connect 
-port = 3423               
-
-# Connect to the server
-ssl_sock.connect(('127.0.0.1', port))
-
 def create():
     "Create a rectangle with draw function (below) with random color"
     for row in range(maze_size):
@@ -62,6 +44,24 @@ def draw(row, col, color):
     x2 = x1 + cell_size
     y2 = y1 + cell_size
     ffs.create_rectangle(x1, y1, x2, y2, fill=color)
+
+
+# Create a set object 
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+# SSL context creation
+context = ssl.create_default_context(ssl.Purpose.SERVER_AUTH)
+context.load_verify_locations(cafile="./server.crt") 
+context.check_hostname = False  # Disable hostname verification
+
+# Wrap the socket with SSL
+ssl_sock = context.wrap_socket(s, server_hostname='127.0.0.1')
+
+# Define the port on which you want to connect 
+port = 3423               
+
+# Connect to the server
+ssl_sock.connect(('127.0.0.1', port))
 
 received = recv_msg(ssl_sock)
 m = received.decode("utf-8")

@@ -72,22 +72,6 @@ ecr = revisited_cells[e][0]
 ecc = revisited_cells[e][1]
 end_color = 'red'
 
-server_message = {
-    "ms": ms,
-    "map": maze_map,
-    "cell_size": cell_size,
-    "scr": scr,
-    "scc": scc,
-    "start_color": start_color,
-    "ecr": ecr,
-    "ecc": ecc,
-    "end_color": end_color,
-    "canvas_size": canvas_size,
-    "x1": x1,
-    "y1": y1
-}
-
-
 def send_msg(sock, msg):
     # Prefix each message with a 4-byte length (network byte order)
     msg = struct.pack('>I', len(msg)) + msg
@@ -167,6 +151,21 @@ def serve(m):
             s.close()
             server_running = False
 
+
+server_message = {
+    "ms": ms,
+    "map": maze_map,
+    "cell_size": cell_size,
+    "scr": scr,
+    "scc": scc,
+    "start_color": start_color,
+    "ecr": ecr,
+    "ecc": ecc,
+    "end_color": end_color,
+    "canvas_size": canvas_size,
+    "x1": x1,
+    "y1": y1
+}
 
 server_running = True
 serve(server_message)
