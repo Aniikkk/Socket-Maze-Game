@@ -129,10 +129,9 @@ def move(event):
         data = jsonObj
 
         send_msg(ssl_sock, data)
+        ssl_sock.close()    
         window.destroy()
 
-def cl():
-    ssl_sock.close()
 
 window.bind("<Key>", move)
 

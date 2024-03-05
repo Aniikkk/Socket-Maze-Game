@@ -5,8 +5,8 @@ import ssl
 from _thread import *
 from random import randint
 
-cell_size = 10  # pixels
-ms = 10  # rows and columns
+cell_size = 12  # pixels
+ms = 20  # rows and columns
 visited_cells = []
 walls = []
 revisited_cells = []
