@@ -45,8 +45,6 @@ start_color = 'Green'
 ccr, ccc = scr, scc
 x1 = ccr * 12
 y1 = ccc * 12
-print(scr, scc)
-print(ccr, ccc)
 
 maze_map[ccr][ccc] = 'P'
 loop = 1
